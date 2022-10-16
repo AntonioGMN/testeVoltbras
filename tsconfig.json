@@ -8,5 +8,9 @@
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"types": ["node"]
+	},
+	"preset": "ts-node",
+	"ts-node": {
+		"esm": true
 	}
 }
