@@ -5,13 +5,25 @@ const typeDefs = `#graphql
     hasStation: Boolean
   }
 
+  type recharge{
+    start: String
+    end: String
+  }
+
+  type stations{
+    name:    String   
+    planet:  String
+    recharges: [recharge]
+  }
+
   type Query {
     suitablePlanets: [suitablePlanet]
+    stations: [stations]
   }
 
 
   type Mutation {
-    installStation(name: String, mass: Float, hasStation: Boolean): suitablePlanet
+    installStation(name: String, mass: Float, hasStation: Boolean, stationName: String): stations
   }
 `;
 
