@@ -8,21 +8,32 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
+  email     String  @unique
   password  String
 }
 
+model Planets {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  mass        Float
+  hasStation  Boolean  @default(false)
+  stations    Stations[]
+}
+
 model Stations {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  planet    String
-  recharges Recharges[] 
+  id              Int      @id @default(autoincrement())
+  name            String   @unique
+  planet          String
+  SuitablePlanet  Planets  @relation(fields: [planetId], references: [id])
+  planetId        Int
+  recharges       Recharges[] 
 }
 
 model Recharges{
-  id        Int      @id @default(autoincrement())
-  start     DateTime    @default(now())
-  end       DateTime
-  station   Stations   @relation(fields: [stationId], references: [id])
-  stationId Int    
+  id         Int       @id @default(autoincrement())
+  start      DateTime  @default(now())
+  end        DateTime
+  station    Stations  @relation(fields: [stationId], references: [id])
+  stationId  Int    
 }

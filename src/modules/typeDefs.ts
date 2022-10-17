@@ -16,6 +16,11 @@ const typeDefs = `#graphql
     recharges: [recharge]
   }
 
+  input stationsInput {
+    name: String
+    planet: String
+  }
+
   type Query {
     suitablePlanets: [suitablePlanet]
     stations: [stations]
@@ -23,7 +28,7 @@ const typeDefs = `#graphql
 
 
   type Mutation {
-    installStation(name: String, mass: Float, hasStation: Boolean, stationName: String): stations
+    installStation(data: stationsInput): stations
   }
 `;
 
