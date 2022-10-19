@@ -3,7 +3,8 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 
 import typeDefs from "./typesDefs/index.js";
 import resolvers from "./modules/resolvers.js";
-import planetApi from "./dataSource.js";
+import jwt from "jsonwebtoken";
+import { GraphQLError } from "graphql";
 
 const server = new ApolloServer({
 	typeDefs,
@@ -16,9 +17,11 @@ const server = new ApolloServer({
 //  3. prepares your app to handle incoming requests
 
 const { url } = await startStandaloneServer(server, {
-	context: async () => ({
-		dataSources: await planetApi,
-	}),
+	context: async ({ req }) => {
+		const token = req.headers.authorization || undefined;
+
+		return { token };
+	},
 	listen: { port: 4000 },
 });
 

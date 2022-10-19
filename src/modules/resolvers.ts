@@ -3,6 +3,10 @@ import axios from "axios";
 import dateScalar from "../typesDefs/date.js";
 import { GraphQLError } from "graphql";
 import dayjs from "dayjs";
+
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
 dayjs.locale("br");
 
 const resolvers = {
@@ -47,8 +51,6 @@ const resolvers = {
 				},
 			});
 
-			console.log(planet);
-
 			const response = db.stations.create({
 				data: { name: data.name, planet: data.planet, planetId: planet.id },
 			});
@@ -62,13 +64,104 @@ const resolvers = {
 				},
 			});
 
-			console.log(r);
-
 			return response;
 		},
 
-		async recharge(_: any, { data }) {
+		async signUp(_: any, { data }) {
+			const { email, password } = data;
+
+			const findedUser = await db.user.findFirst({
+				where: {
+					email: email,
+				},
+			});
+
+			if (findedUser) {
+				throw new GraphQLError(
+					"There is already a registered user with this email",
+					{
+						extensions: {
+							code: "BAD_USER_INPUT",
+							http: { status: 401 },
+						},
+					}
+				);
+			}
+
+			const hashPassword = bcrypt.hashSync(password, 10);
+
+			const createdUser = await db.user.create({
+				data: {
+					...data,
+					password: hashPassword,
+				},
+			});
+
+			return createdUser;
+		},
+
+		async login(_: any, { data }) {
+			const { email, password } = data;
+			console.log(password);
+
+			const findedUser = await db.user.findFirst({
+				where: {
+					email: email,
+				},
+			});
+			if (!findedUser) {
+				throw new GraphQLError("Not found a user com this email", {
+					extensions: {
+						code: "BAD_USER_INPUT",
+						http: { status: 401 },
+					},
+				});
+			}
+
+			const isPasswordValid = bcrypt.compareSync(password, findedUser.password);
+			console.log(password + " = " + findedUser.password + " " + isPasswordValid);
+
+			if (!isPasswordValid) {
+				throw new GraphQLError(
+					"There is already a registered user with this email",
+					{
+						extensions: {
+							code: "BAD_USER_INPUT",
+							http: { status: 401 },
+						},
+					}
+				);
+			}
+
+			const token = jwt.sign({ user: findedUser }, process.env.JWT_SECRET);
+			return { token };
+		},
+
+		async recharge(_: any, { data }, context) {
 			const rechargeEnd = dayjs(data.date).toDate();
+			const token = context.token;
+			let userId;
+
+			if (!token)
+				throw new GraphQLError("Erro com authorization header", {
+					extensions: {
+						code: "BAD_USER_INPUT",
+						http: { status: 401 },
+					},
+				});
+
+			try {
+				const secretKey = process.env.JWT_SECRET;
+				const response = jwt.verify(token, secretKey);
+				userId = response.user.id;
+			} catch {
+				throw new GraphQLError("Invalid Token", {
+					extensions: {
+						code: "BAD_USER_INPUT",
+						http: { status: 401 },
+					},
+				});
+			}
 
 			if (dayjs().isAfter(rechargeEnd)) {
 				throw new GraphQLError(
@@ -111,7 +204,7 @@ const resolvers = {
 			}
 
 			const userLastRecharge = await db.recharges.findFirst({
-				where: { userId: 1 },
+				where: { userId },
 				orderBy: { id: "desc" },
 			});
 
@@ -126,11 +219,13 @@ const resolvers = {
 				}
 			}
 
+			console.log(rechargeEnd);
+
 			const newRecharge = await db.recharges.create({
 				data: {
 					stationId: station.id,
 					end: rechargeEnd,
-					userId: 1,
+					userId,
 				},
 			});
 
