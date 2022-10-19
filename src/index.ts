@@ -2,7 +2,7 @@ import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
 
 import typeDefs from "./typesDefs/index.js";
-import resolvers from "./modules/resolvers.js";
+import resolvers from "./resolvers/index.js";
 import jwt from "jsonwebtoken";
 import { GraphQLError } from "graphql";
 
