@@ -1,6 +1,13 @@
 import db from "../dataBase.js";
 import axios from "axios";
+import dateScalar from "../typesDefs/date.js";
+import { GraphQLError } from "graphql";
+import dayjs from "dayjs";
+dayjs.locale("br");
+
 const resolvers = {
+	date: dateScalar,
+
 	Query: {
 		suitablePlanets: async () => {
 			try {
@@ -58,6 +65,76 @@ const resolvers = {
 			console.log(r);
 
 			return response;
+		},
+
+		async recharge(_: any, { data }) {
+			const rechargeEnd = dayjs(data.date).toDate();
+
+			if (dayjs().isAfter(rechargeEnd)) {
+				throw new GraphQLError(
+					"Date is invalid. You need to pass a date greater than the current date",
+					{
+						extensions: {
+							code: "BAD_USER_INPUT",
+							http: { status: 401 },
+						},
+					}
+				);
+			}
+
+			const station = await db.stations.findFirst({
+				where: { name: data.stationName },
+			});
+
+			if (!station)
+				throw new GraphQLError("not found station", {
+					extensions: {
+						code: "BAD_USER_INPUT",
+						http: { status: 401 },
+					},
+				});
+
+			const stationLastRecharge = await db.recharges.findFirst({
+				where: { stationId: station.id },
+				orderBy: { id: "desc" },
+			});
+
+			if (stationLastRecharge) {
+				if (!dayjs().isAfter(stationLastRecharge.end)) {
+					throw new GraphQLError("This station is already doing a recharge", {
+						extensions: {
+							code: "BAD_REQUEST",
+							http: { status: 400 },
+						},
+					});
+				}
+			}
+
+			const userLastRecharge = await db.recharges.findFirst({
+				where: { userId: 1 },
+				orderBy: { id: "desc" },
+			});
+
+			if (userLastRecharge) {
+				if (!dayjs().isAfter(userLastRecharge.end)) {
+					throw new GraphQLError("This user is already doing a recharge", {
+						extensions: {
+							code: "BAD_REQUEST",
+							http: { status: 400 },
+						},
+					});
+				}
+			}
+
+			const newRecharge = await db.recharges.create({
+				data: {
+					stationId: station.id,
+					end: rechargeEnd,
+					userId: 1,
+				},
+			});
+
+			return newRecharge;
 		},
 	},
 };

@@ -1,4 +1,6 @@
 const typeDefs = `#graphql
+  scalar date
+
   type suitablePlanet {
     name: String
     mass: Float
@@ -6,19 +8,23 @@ const typeDefs = `#graphql
   }
 
   type recharge{
-    start: String
-    end: String
+    start: date
+    end: date
   }
 
   type stations{
     name:    String   
     planet:  String
-    recharges: [recharge]
   }
 
   input stationsInput {
     name: String
     planet: String
+  }
+ 
+  input rechargeInput {
+    stationName: String
+    date: String
   }
 
   type Query {
@@ -29,6 +35,7 @@ const typeDefs = `#graphql
 
   type Mutation {
     installStation(data: stationsInput): stations
+    recharge(data: rechargeInput): recharge
   }
 `;
 

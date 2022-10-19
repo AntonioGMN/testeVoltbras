@@ -1,7 +1,9 @@
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
+
+import typeDefs from "./typesDefs/index.js";
 import resolvers from "./modules/resolvers.js";
-import typeDefs from "./modules/typeDefs.js";
+import planetApi from "./dataSource.js";
 
 const server = new ApolloServer({
 	typeDefs,
@@ -14,6 +16,9 @@ const server = new ApolloServer({
 //  3. prepares your app to handle incoming requests
 
 const { url } = await startStandaloneServer(server, {
+	context: async () => ({
+		dataSources: await planetApi,
+	}),
 	listen: { port: 4000 },
 });
 
