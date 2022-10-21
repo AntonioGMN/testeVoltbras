@@ -10,14 +10,21 @@
 		"postinstall": "npm run compile",
 		"start": "npm run compile && node ./dist/index.ts",
 		"dev": "nodemon  src/index.ts",
-		"migrate": "npx prisma migrate dev"
+		"migrate": "npx prisma migrate dev",
+		"test": "jest --config jest.config.ts ./tests"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@apollo/client": "^3.7.0",
+		"@types/jest": "^29.2.0",
 		"@types/node": "^18.11.0",
+		"@types/supertest": "^2.0.12",
+		"jest": "^29.2.1",
 		"nodemon": "^2.0.20",
+		"supertest": "^6.3.0",
+		"ts-jest": "^29.0.0-next.1",
 		"ts-node": "^10.9.1"
 	},
 	"dependencies": {

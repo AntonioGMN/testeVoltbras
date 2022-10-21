@@ -23,23 +23,47 @@ const typeDefs = `#graphql
   }
  
   input rechargeInput {
+    reservationId: Int
     stationName: String
     date: String
   }
 
   type user {
+    name: String
     email: String
     password: String
   }
 
   input userInput{
+    name: String
     email: String
     password: String
+  }
+
+  type stationHistory{
+    start: date
+    duration: String
+    user: String
+  }
+
+  type reservate{
+    id: Int
+    station: String
+    user: String
+    start: date
+    end: date
+  }
+
+  input reservateInput{
+    stationName: String
+    start: date
+    end: date
   }
 
   type Query {
     suitablePlanets: [suitablePlanet]
     stations: [stations]
+    stationHistory(stationName: String): [stationHistory]
   }
 
   type token {
@@ -51,7 +75,8 @@ const typeDefs = `#graphql
     installStation(data: stationsInput): stations
     recharge(data: rechargeInput): recharge
     signUp(data: userInput): user
-    login(data: userInput): token
+    login(data: userInput): String
+    reservation(data: reservateInput): reservate
   }
 `;
 

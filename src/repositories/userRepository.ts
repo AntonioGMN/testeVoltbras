@@ -9,9 +9,9 @@ export async function findByEmail(email: string) {
 	return user;
 }
 
-export async function create(email: string, password: string) {
+export async function create(name: string, email: string, password: string) {
 	const createdUser = await db.user.create({
-		data: { email, password },
+		data: { name, email, password },
 	});
 	return createdUser;
 }

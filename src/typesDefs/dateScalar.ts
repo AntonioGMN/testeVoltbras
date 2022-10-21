@@ -9,8 +9,6 @@ const dateScalar = new GraphQLScalarType({
 		return date; // Convert outgoing Date to integer for JSON
 	},
 	parseValue(value: number) {
-		console.log("parseValue");
-		console.log(value);
 		return new Date(value); // Convert incoming integer to Date
 	},
 	parseLiteral(ast) {

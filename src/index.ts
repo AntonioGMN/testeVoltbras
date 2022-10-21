@@ -3,8 +3,6 @@ import { startStandaloneServer } from "@apollo/server/standalone";
 
 import typeDefs from "./typesDefs/index.js";
 import resolvers from "./resolvers/index.js";
-import jwt from "jsonwebtoken";
-import { GraphQLError } from "graphql";
 
 const server = new ApolloServer({
 	typeDefs,
@@ -24,5 +22,7 @@ const { url } = await startStandaloneServer(server, {
 	},
 	listen: { port: 4000 },
 });
+
+export default server;
 
 console.log(`🚀  Server ready at: ${url}`);

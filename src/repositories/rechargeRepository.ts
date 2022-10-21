@@ -22,3 +22,13 @@ export async function create(stationId: number, end: Date, userId: number) {
 	});
 	return recharge;
 }
+
+export async function getAllByStationId(stationId: number) {
+	const recharges = await db.recharges.findMany({
+		where: { stationId },
+		include: {
+			user: true,
+		},
+	});
+	return recharges;
+}
