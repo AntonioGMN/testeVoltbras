@@ -150,8 +150,6 @@ const resolvers = {
 
 			const station = await stationService.findStationOrThowErro(data.stationName);
 			console.log(station);
-			// await rechargeService.verifyStationAvailable(station.id);
-			// await rechargeService.verifyUserAvailable(userId);
 
 			await reservationsService.verifyTimeAvailable(start, end, station.id);
 
