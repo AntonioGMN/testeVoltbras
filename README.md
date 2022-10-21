@@ -66,7 +66,7 @@ $ git clone git@github.com:AntonioGMN/testeVoltbras.git
 ### Access the directory where you cloned it
 
 ```bash
-$ cd -TestHubLocal-back-
+$ cd testeVoltbras
 ```
 
 ### Install back-end dependencies
