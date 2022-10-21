@@ -34,7 +34,7 @@ const resolvers = {
 				await planetsDataBase.upsert(p.pl_name, p.pl_bmassj);
 			}
 
-			const suitablePlanets = await db.planets.findMany();
+			const suitablePlanets = await planetsDataBase.get();
 			return suitablePlanets;
 		},
 
@@ -110,7 +110,7 @@ const resolvers = {
 		},
 
 		async recharge(_: any, { data }, context) {
-			const userId = validateTokenAndReturnUserId(context.token);
+			const { id: userId } = validateTokenAndReturnUserId(context.token);
 			const now = dayjs().toDate();
 			const rechargeEnd = dayjs(data.date).toDate();
 
@@ -142,24 +142,23 @@ const resolvers = {
 		},
 
 		async reservation(_: any, { data }, context) {
-			const userId = validateTokenAndReturnUserId(context.token);
+			const user = validateTokenAndReturnUserId(context.token);
 			const start = dayjs(data.start).toDate();
 			const end = dayjs(data.end).toDate();
 
 			await dateService.validateIsAfet(start, end);
 
 			const station = await stationService.findStationOrThowErro(data.stationName);
-			console.log(station);
 
 			await reservationsService.verifyTimeAvailable(start, end, station.id);
 
 			const reservation = await reservationsDataBase.create(
 				station.id,
-				userId,
+				user.id,
 				start,
 				end
 			);
-			return reservation;
+			return { ...reservation, station: station.name, user: user.name };
 		},
 	},
 };

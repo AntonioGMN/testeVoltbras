@@ -7,7 +7,7 @@ export default function validateTokenAndReturnUserId(token: string) {
 	try {
 		const secretKey = process.env.JWT_SECRET;
 		const response = jwt.verify(token, secretKey);
-		return response.user.id;
+		return response.user;
 	} catch {
 		throw unauthorized("Invalid token");
 	}

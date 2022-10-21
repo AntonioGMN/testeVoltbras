@@ -1,5 +1,10 @@
 import db from "../dataBase.js";
 
+export async function get() {
+	const planet = await db.planets.findMany({ orderBy: { id: "asc" } });
+	return planet;
+}
+
 export async function upsert(name: string, mass: number) {
 	await db.planets.upsert({
 		where: { name: name },

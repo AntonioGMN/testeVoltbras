@@ -10,8 +10,7 @@
 		"postinstall": "npm run compile",
 		"start": "npm run compile && node ./dist/index.ts",
 		"dev": "nodemon  src/index.ts",
-		"migrate": "npx prisma migrate dev",
-		"test": "jest --config jest.config.ts ./tests"
+		"migrate": "npx prisma migrate dev"
 	},
 	"keywords": [],
 	"author": "",
