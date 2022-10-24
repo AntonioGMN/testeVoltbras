@@ -85,6 +85,12 @@ DATABASE_URL= postgres://postgres:123456@localhost:5432/stations
 JWT_SECRET=123456
 ```
 
+### Start the database
+
+```bash
+npm run migrate
+```
+
 ### Run the back-end with
 
 ```bash
